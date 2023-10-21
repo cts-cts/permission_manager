@@ -71,18 +71,18 @@ class _PermissionManagerPageState extends State<PermissionManagerPage> {
                     ),
                     child: ListTile(
                       title: Text(
-                        'Location Service',
+                        'Notification Permission',
                         style: TextStyle(
                           fontWeight: FontWeight.bold,
                         ),
                       ),
                       trailing: CupertinoSwitch(
-                        value: Base.permissionManagementController
-                            .isLocationServiceEnable.value,
                         trackColor: Colors.red,
+                        value: Base.permissionManagementController
+                            .isNotificationEnable.value,
                         onChanged: (v) {
                           Base.permissionManagementController
-                              .enableLocationService();
+                              .enableNotificationPermission();
                         },
                       ),
                     ),
@@ -99,18 +99,18 @@ class _PermissionManagerPageState extends State<PermissionManagerPage> {
                     ),
                     child: ListTile(
                       title: Text(
-                        'Notification Permission',
+                        'Location Service',
                         style: TextStyle(
                           fontWeight: FontWeight.bold,
                         ),
                       ),
                       trailing: CupertinoSwitch(
-                        trackColor: Colors.red,
                         value: Base.permissionManagementController
-                            .isLocationPermissionEnable.value,
+                            .isLocationServiceEnable.value,
+                        trackColor: Colors.red,
                         onChanged: (v) {
                           Base.permissionManagementController
-                              .enableNotificationPermission();
+                              .enableLocationService();
                         },
                       ),
                     ),

@@ -21,47 +21,13 @@ class PermissionManagementController extends GetxController {
   }
 
   void manageAllPermission() async {
-    if (await enableLocationPermission()) {
+    if (await enableLocationPermission() &&
+        await enableNotificationPermission()) {
       await enableLocationService();
-
-      await enableNotificationPermission();
 
       await enableBattaryOptimization();
 
       readyToGo();
-    }
-  }
-
-  Future<void> enableBattaryOptimization() async {
-    if (!(await FlutterForegroundTask.isIgnoringBatteryOptimizations)) {
-      (!(await FlutterForegroundTask.requestIgnoreBatteryOptimization()));
-      await enableBattaryOptimization();
-    } else {
-      isBattaryOptimizationEnable.value = true;
-    }
-  }
-
-  Future<void> enableNotificationPermission() async {
-    NotificationPermission checkNotification =
-        await FlutterForegroundTask.checkNotificationPermission();
-    if (checkNotification == NotificationPermission.granted) {
-      isNotificationEnable.value = true;
-    } else {
-      checkNotification =
-          await FlutterForegroundTask.requestNotificationPermission();
-      if (checkNotification != NotificationPermission.granted) {
-        await enableNotificationPermission();
-      }
-    }
-  }
-
-  Future<void> enableLocationService() async {
-    if (await location.serviceEnabled()) {
-      isLocationServiceEnable.value = true;
-    } else if (await location.requestService()) {
-      isLocationServiceEnable.value = true;
-    } else {
-      await enableLocationService();
     }
   }
 
@@ -87,6 +53,46 @@ class PermissionManagementController extends GetxController {
       klog(e);
     }
     return status;
+  }
+
+  Future<bool> enableNotificationPermission() async {
+    bool status = false;
+    NotificationPermission checkNotification =
+        await FlutterForegroundTask.checkNotificationPermission();
+    if (checkNotification == NotificationPermission.granted) {
+      isNotificationEnable.value = true;
+      return true;
+    } else {
+      final notificationPermission =
+          await FlutterForegroundTask.requestNotificationPermission();
+      if (notificationPermission == NotificationPermission.granted) {
+        isNotificationEnable.value = true;
+        return true;
+      }
+    }
+
+    return status;
+  }
+
+  Future<void> enableLocationService() async {
+    klog('enableLocationService');
+    if (await location.serviceEnabled()) {
+      isLocationServiceEnable.value = true;
+    } else if (await location.requestService()) {
+      isLocationServiceEnable.value = true;
+    } else {
+      await enableLocationService();
+    }
+  }
+
+  Future<void> enableBattaryOptimization() async {
+    klog('enableBattaryOptimization');
+    if (!(await FlutterForegroundTask.isIgnoringBatteryOptimizations)) {
+      (!(await FlutterForegroundTask.requestIgnoreBatteryOptimization()));
+      await enableBattaryOptimization();
+    } else {
+      isBattaryOptimizationEnable.value = true;
+    }
   }
 
   void readyToGo() async {
