@@ -99,6 +99,34 @@ class _PermissionManagerPageState extends State<PermissionManagerPage> {
                     ),
                     child: ListTile(
                       title: Text(
+                        'Notification Permission',
+                        style: TextStyle(
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                      trailing: CupertinoSwitch(
+                        trackColor: Colors.red,
+                        value: Base.permissionManagementController
+                            .isLocationPermissionEnable.value,
+                        onChanged: (v) {
+                          Base.permissionManagementController
+                              .enableNotificationPermission();
+                        },
+                      ),
+                    ),
+                  ),
+                  SizedBox(
+                    height: 16,
+                  ),
+                  Container(
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(14),
+                      border: Border.all(
+                        color: Colors.black54,
+                      ),
+                    ),
+                    child: ListTile(
+                      title: Text(
                         'Battary Optimization',
                         style: TextStyle(
                           fontWeight: FontWeight.bold,

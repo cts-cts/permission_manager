@@ -9,8 +9,8 @@ class PermissionManagementController extends GetxController {
 
   final isLocationPermissionEnable = RxBool(false);
   final isLocationServiceEnable = RxBool(false);
+  final isNotificationEnable = RxBool(false);
   final isBattaryOptimizationEnable = RxBool(false);
-
   @override
   void onReady() async {
     1.delay();
@@ -24,6 +24,8 @@ class PermissionManagementController extends GetxController {
     if (await enableLocationPermission()) {
       await enableLocationService();
 
+      await enableNotificationPermission();
+
       await enableBattaryOptimization();
 
       readyToGo();
@@ -36,6 +38,20 @@ class PermissionManagementController extends GetxController {
       await enableBattaryOptimization();
     } else {
       isBattaryOptimizationEnable.value = true;
+    }
+  }
+
+  Future<void> enableNotificationPermission() async {
+    NotificationPermission checkNotification =
+        await FlutterForegroundTask.checkNotificationPermission();
+    if (checkNotification == NotificationPermission.granted) {
+      isNotificationEnable.value = true;
+    } else {
+      checkNotification =
+          await FlutterForegroundTask.requestNotificationPermission();
+      if (checkNotification != NotificationPermission.granted) {
+        await enableNotificationPermission();
+      }
     }
   }
 
