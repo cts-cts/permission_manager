@@ -1,6 +1,7 @@
 import 'package:flutter_foreground_task/flutter_foreground_task.dart';
 import 'package:get/get.dart';
 import 'package:location/location.dart';
+import 'package:permission_manager/src/base/base.dart';
 import 'package:permission_manager/src/helpers/klog.dart';
 import 'package:permission_manager/src/pages/home_page.dart';
 
@@ -29,11 +30,14 @@ class PermissionManagementController extends GetxController {
       await enableBattaryOptimization();
 
       readyToGo();
+
+      Base.locationService;
     }
   }
 
   Future<bool> enableLocationPermission() async {
     bool status = false;
+
     PermissionStatus permissionGranted;
     try {
       permissionGranted = await location.hasPermission();
