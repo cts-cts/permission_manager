@@ -67,8 +67,6 @@ void locationServiceCallback() {
 }
 
 class LocationServiceHandler extends TaskHandler {
-  int count = 0;
-
   @override
   void onStart(DateTime timestamp, SendPort? sendPort) async {}
 
@@ -81,10 +79,5 @@ class LocationServiceHandler extends TaskHandler {
       desiredAccuracy: LocationAccuracy.bestForNavigation,
       forceAndroidLocationManager: true,
     );
-
-    await FlutterForegroundTask.updateService(
-      notificationText: '$count > ${position.latitude}, ${position.longitude}',
-    );
-    count++;
   }
 }
