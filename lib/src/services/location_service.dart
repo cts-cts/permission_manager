@@ -1,4 +1,3 @@
-import 'dart:async';
 import 'dart:isolate';
 
 import 'package:flutter_foreground_task/flutter_foreground_task.dart';
@@ -39,7 +38,8 @@ class LocationService extends GetxService {
         playSound: false,
       ),
       foregroundTaskOptions: ForegroundTaskOptions(
-        isOnceEvent: true,
+        isOnceEvent: false,
+        interval: 60000,
         autoRunOnBoot: false,
         allowWakeLock: true,
         allowWifiLock: true,
@@ -48,12 +48,16 @@ class LocationService extends GetxService {
     klog('Location Service Channel Initialized');
   }
 
-  void startLocationService() {
-    FlutterForegroundTask.startService(
-      notificationTitle: 'Live Location Tracker',
-      notificationText: 'Listening your live location',
-      callback: locationServiceCallback,
-    );
+  void startLocationService() async {
+    if (await FlutterForegroundTask.isRunningService) {
+      await FlutterForegroundTask.updateService();
+    } else {
+      await FlutterForegroundTask.startService(
+        notificationTitle: 'Live Location Tracker',
+        notificationText: 'Listening your live location',
+        callback: locationServiceCallback,
+      );
+    }
   }
 }
 
@@ -63,39 +67,24 @@ void locationServiceCallback() {
 }
 
 class LocationServiceHandler extends TaskHandler {
-  final LocationSettings locationSettings = LocationSettings(
-    accuracy: LocationAccuracy.high,
-    distanceFilter: 10,
-  );
+  int count = 0;
 
   @override
-  void onStart(DateTime timestamp, SendPort? sendPort) async {
-    klog('onStart');
+  void onStart(DateTime timestamp, SendPort? sendPort) async {}
+
+  @override
+  void onDestroy(DateTime timestamp, SendPort? sendPort) {}
+
+  @override
+  void onRepeatEvent(DateTime timestamp, SendPort? sendPort) async {
     Position position = await Geolocator.getCurrentPosition(
       desiredAccuracy: LocationAccuracy.high,
+      forceAndroidLocationManager: true,
     );
 
     await FlutterForegroundTask.updateService(
-      notificationText: '${position.latitude}, ${position.longitude}',
+      notificationText: '$count > ${position.latitude}, ${position.longitude}',
     );
-
-    Geolocator.getPositionStream(locationSettings: locationSettings)
-        .listen((Position? position) async {
-      if (position != null) {
-        await FlutterForegroundTask.updateService(
-          notificationText: '${position.latitude}, ${position.longitude}',
-        );
-      }
-    });
-  }
-
-  @override
-  void onDestroy(DateTime timestamp, SendPort? sendPort) {
-    klog('onDestroy');
-  }
-
-  @override
-  void onRepeatEvent(DateTime timestamp, SendPort? sendPort) {
-    klog('onRepeatEvent');
+    count++;
   }
 }
