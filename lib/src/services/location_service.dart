@@ -75,7 +75,7 @@ class LocationServiceHandler extends TaskHandler {
 
   @override
   void onRepeatEvent(DateTime timestamp, SendPort? sendPort) async {
-    Position position = await Geolocator.getCurrentPosition(
+    final position = await Geolocator.getCurrentPosition(
       desiredAccuracy: LocationAccuracy.bestForNavigation,
       forceAndroidLocationManager: true,
     );

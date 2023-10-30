@@ -1,5 +1,5 @@
 import 'dart:developer';
 
-klog(dynamic data) {
+void klog(dynamic data) {
   log('$data');
 }
